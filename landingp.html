@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yelahanka Campaign - Market Watch</title>
+    <style>
+        /* --- DESIGN TOKENS --- */
+        :root {
+            --bg-color: #F5F7FA;
+            --text-dark: #111827;
+            --text-muted: #6B7280;
+            --accent-blue: #2563EB;
+            --accent-yellow: #F4D03F;
+            --accent-green: #10B981; /* For Greenery Slide */
+            --border-light: rgba(0,0,0,0.06);
+            --radius-box: 32px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- MAIN GRID LAYOUT --- */
+        .app-container {
+            width: 95%;
+            height: 90%;
+            max-width: 1600px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 40px;
+            background: #fff;
+            padding: 40px;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.05);
+        }
+
+        /* --- LEFT PANEL --- */
+        .left-panel {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 20px 20px 0;
+        }
+
+        /* HEADER */
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10B981;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+            transition: background 0.5s ease;
+        }
+
+        /* CONTENT AREA */
+        .content-wrapper {
+            position: relative;
+            height: 320px; /* Space for text transitions */
+            display: flex;
+            align-items: center;
+        }
+
+        .slide-text {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%) translateX(30px);
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            width: 100%;
+            pointer-events: none;
+        }
+
+        .slide-text.active {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+            pointer-events: auto;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            line-height: 1.1;
+            color: var(--text-dark);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+        }
+
+        .highlight-mark {
+            background: linear-gradient(120deg, transparent 0%, transparent 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 40%;
+            background-position: 0 88%;
+            transition: background-size 1s ease;
+        }
+
+        .active .highlight-mark {
+            background: linear-gradient(120deg, rgba(244, 208, 63, 0.5) 0%, rgba(244, 208, 63, 0.5) 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 40%;
+            background-position: 0 88%;
+        }
+
+        /* Greenery Highlight override */
+        .green-highlight .highlight-mark {
+             background: linear-gradient(120deg, rgba(16, 185, 129, 0.3) 0%, rgba(16, 185, 129, 0.3) 100%);
+        }
+
+        p.description {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            max-width: 480px;
+            border-left: 3px solid var(--border-light);
+            padding-left: 20px;
+        }
+
+        /* Badges */
+        .stat-badge {
+            display: inline-flex;
+            flex-direction: column;
+            background: var(--text-dark);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-badge .value { font-size: 1.5rem; font-weight: 700; color: var(--accent-yellow); }
+        .stat-badge .label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
+
+        /* FOOTER & NAV */
+        .panel-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border-light);
+            padding-top: 30px;
+        }
+
+        .progress-indicator {
+            font-family: monospace;
+            font-size: 1rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+        .progress-bar {
+            display: inline-block;
+            width: 80px;
+            height: 2px;
+            background: #E5E7EB;
+            margin: 0 15px;
+            vertical-align: middle;
+            position: relative;
+        }
+        .progress-fill {
+            position: absolute;
+            left: 0; top: 0; height: 100%;
+            background: var(--text-dark);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .nav-buttons { display: flex; gap: 16px; }
+
+        .nav-btn {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            border: 1px solid #E5E7EB;
+            background: #fff;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease;
+            color: var(--text-dark);
+        }
+
+        .nav-btn:hover {
+            background: var(--text-dark);
+            color: #fff;
+            border-color: var(--text-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav-btn.disabled { opacity: 0.3; pointer-events: none; }
+
+        /* --- RIGHT PANEL --- */
+        .right-panel {
+            background: #000;
+            border-radius: var(--radius-box);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .video-player {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            position: absolute;
+            top: 0; left: 0;
+        }
+        .video-player.active { opacity: 1; }
+
+        /* --- MOBILE --- */
+        @media (max-width: 1024px) {
+            .app-container { flex-direction: column-reverse; width: 100%; height: 100%; border-radius: 0; padding: 0; }
+            .left-panel { padding: 30px; flex: 1; }
+            .right-panel { flex: 0 0 45vh; border-radius: 0 0 30px 30px; }
+            h1 { font-size: 1.8rem; }
+            .content-wrapper { height: auto; margin: 20px 0; }
+            .slide-text { position: relative; opacity: 1; transform: none; display: none; }
+            .slide-text.active { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="left-panel">
+            
+            <div class="panel-header">
+                <div class="status-dot" id="status-indicator"></div>
+                <span>Market Watch: Q1 2026</span>
+                <span style="color: #E5E7EB;">|</span>
+                <span>Yelahanka Sector</span>
+            </div>
+
+            <div class="content-wrapper">
+                
+                <div id="text-1" class="slide-text active">
+                    <h1>See the <span class="highlight-mark">hidden indicators</span> driving the Yelahanka boom.</h1>
+                    <p class="description">
+                        Before you buy a home, are you considering the right pointers? Our free guide reveals the data most buyers miss.
+                    </p>
+                </div>
+
+                <div id="text-2" class="slide-text">
+                    <div class="stat-badge">
+                        <span class="value">25.3%</span>
+                        <span class="label">YoY Growth</span>
+                    </div>
+                    <h1>Missed Whitefield? <br>Don't miss <span class="highlight-mark">Yelahanka.</span></h1>
+                    <p class="description">
+                        The same signals that triggered the Whitefield boom are flashing here. Don't miss out twice.
+                    </p>
+                </div>
+
+                <div id="text-3" class="slide-text">
+                    <div class="stat-badge" style="background: #2563EB;">
+                        <span class="value">30 Mins</span>
+                        <span class="label">To Tech Parks</span>
+                    </div>
+                    <h1>Seamless Connectivity <br>from <span class="highlight-mark">Yelahanka.</span></h1>
+                    <p class="description">
+                        Reach the airport, CBD, and major tech parks within just 30 minutes. The new arterial roads have changed the game.
+                    </p>
+                </div>
+
+                <div id="text-4" class="slide-text green-highlight">
+                    <h1>You can't build fresh air. <br>So we built <span class="highlight-mark" style="background-size: 100% 40%;">next to it.</span></h1>
+                    <p class="description">
+                        Yelahanka borders the <strong>1320-acre GKVK forest</strong> — one of the city’s largest green lungs. A rare luxury in 2026.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="panel-footer">
+                <div class="progress-indicator">
+                    <span id="current-step">01</span>
+                    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: 25%;"></div></div>
+                    <span style="opacity: 0.4;">04</span>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn disabled" id="btn-prev" onclick="changeSlide(-1)">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                    </button>
+                    <button class="nav-btn" id="btn-next" onclick="changeSlide(1)">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="right-panel">
+            <video class="video-player active" id="vid-1" autoplay muted loop playsinline>
+                <source src="video1.mp4" type="video/mp4">
+            </video>
+
+            <video class="video-player" id="vid-2" muted loop playsinline>
+                <source src="video2.mp4" type="video/mp4">
+            </video>
+
+            <video class="video-player" id="vid-3" muted loop playsinline>
+                <source src="video3.mp4" type="video/mp4">
+            </video>
+
+            <video class="video-player" id="vid-4" muted loop playsinline>
+                <source src="video4.mp4" type="video/mp4">
+            </video>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 4;
+
+        function changeSlide(direction) {
+            const nextSlide = currentSlide + direction;
+
+            // Boundary Check
+            if (nextSlide < 1 || nextSlide > totalSlides) return;
+
+            // 1. Deactivate current
+            document.getElementById(`text-${currentSlide}`).classList.remove('active');
+            document.getElementById(`vid-${currentSlide}`).classList.remove('active');
+
+            // 2. Activate next (with slight delay for text)
+            setTimeout(() => {
+                const vid = document.getElementById(`vid-${nextSlide}`);
+                document.getElementById(`text-${nextSlide}`).classList.add('active');
+                vid.classList.add('active');
+                vid.play(); // Force play on switch
+            }, 100);
+
+            // 3. Update State
+            currentSlide = nextSlide;
+            updateUI();
+        }
+
+        function updateUI() {
+            // Update Progress Bar
+            const percentage = (currentSlide / totalSlides) * 100;
+            document.getElementById('progress-fill').style.width = `${percentage}%`;
+            
+            // Update Number
+            document.getElementById('current-step').innerText = `0${currentSlide}`;
+
+            // Update Buttons
+            const prevBtn = document.getElementById('btn-prev');
+            const nextBtn = document.getElementById('btn-next');
+
+            // Prev Button Logic
+            if (currentSlide === 1) prevBtn.classList.add('disabled');
+            else prevBtn.classList.remove('disabled');
+
+            // Next Button Logic
+            if (currentSlide === totalSlides) nextBtn.classList.add('disabled');
+            else nextBtn.classList.remove('disabled');
+
+            // Special: Change Status Dot Color for Greenery Slide
+            const statusDot = document.getElementById('status-indicator');
+            if (currentSlide === 4) {
+                statusDot.style.background = '#059669'; // Forest Green
+                statusDot.style.boxShadow = '0 0 0 4px rgba(5, 150, 105, 0.2)';
+            } else {
+                statusDot.style.background = '#10B981'; // Standard Green
+                statusDot.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.1)';
+            }
+        }
+    </script>
+</body>
+</html>
