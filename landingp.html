@@ -176,40 +176,111 @@
         /* --- MOBILE STYLES (PORTRAIT MODE) --- */
         @media (max-width: 1024px) {
             
-            body { padding: 0; background: #fff; }
+            body { 
+                padding: 0; 
+                background: #fff; 
+                padding-top: env(safe-area-inset-top, 0px);
+            }
 
             .app-container {
-                width: 100%; height: 100%; max-width: none;
-                margin: 0; padding: 0; border-radius: 0;
+                width: 100%; 
+                height: 100dvh;
+                max-width: none;
+                margin: 0; 
+                padding: 0; 
+                border-radius: 0;
                 display: flex;
                 flex-direction: column; 
                 gap: 0;
+                box-shadow: none;
             }
 
-            /* 1. VIDEO ON TOP */
+            /* 1. VIDEO ON TOP - with top padding/margin */
             .right-panel {
                 order: 1;
-                flex: 0 0 50%;
-                width: 100%;
-                border-radius: 0 0 30px 30px;
+                flex: 0 0 auto;
+                height: 40%;
+                min-height: 200px;
+                max-height: 350px;
+                width: calc(100% - 24px);
+                margin: 12px auto 0;
+                border-radius: 20px;
                 z-index: 2;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            }
+            
+            .right-panel.hide-box {
+                opacity: 0.3;
+            }
+            
+            /* Scale fix for mobile video */
+            #vid-1 {
+                transform: scale(1.35);
             }
 
             /* 2. TEXT ON BOTTOM */
             .left-panel {
                 order: 2;
                 flex: 1;
-                padding: 30px 24px;
+                padding: 20px 20px 16px;
                 background: #fff;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
             }
 
             /* Adjust typography for mobile */
-            .intro-headline { font-size: 2rem; padding: 20px; }
-            h1 { font-size: 2rem; margin-bottom: 15px; }
-            .content-wrapper { height: auto; flex: 1; align-items: flex-start; padding-top: 10px; }
-            .slide-text { position: relative; transform: none; top: auto; opacity: 1; display: none; }
-            .slide-text.active { display: block; animation: fadeUp 0.5s ease; }
+            .intro-overlay {
+                border-radius: 0;
+            }
+            .intro-headline { 
+                font-size: 1.8rem; 
+                padding: 20px; 
+                line-height: 1.3;
+            }
+            
+            h1 { 
+                font-size: 1.5rem; 
+                margin-bottom: 10px; 
+                line-height: 1.25;
+            }
+            
+            .metric-line {
+                font-size: 1rem;
+                margin-bottom: 10px;
+            }
+            .metric-value {
+                font-size: 1.15rem;
+            }
+            
+            p.description {
+                font-size: 0.95rem;
+                line-height: 1.4;
+                padding-left: 12px;
+            }
+            
+            .content-wrapper { 
+                height: auto; 
+                flex: 1; 
+                align-items: flex-start; 
+                padding-top: 0;
+                min-height: 0;
+                display: flex;
+            }
+            
+            .slide-text { 
+                position: relative; 
+                transform: none !important;
+                top: auto !important; 
+                opacity: 1; 
+                display: none;
+                pointer-events: auto;
+                width: 100%;
+            }
+            .slide-text.active { 
+                display: block; 
+                animation: fadeUp 0.4s ease; 
+            }
 
             @keyframes fadeUp {
                 from { opacity: 0; transform: translateY(10px); }
@@ -217,8 +288,35 @@
             }
 
             /* Controls at very bottom */
-            .panel-footer { padding-top: 20px; border-top: none; }
-            .nav-btn { width: 48px; height: 48px; }
+            .panel-footer { 
+                padding: 12px 0 0; 
+                border-top: 1px solid #f0f0f0;
+                margin-top: auto;
+                flex-shrink: 0;
+            }
+            .nav-btn { 
+                width: 44px; 
+                height: 44px; 
+                -webkit-tap-highlight-color: transparent;
+            }
+            .nav-btn:active {
+                background: #e5e5e5;
+            }
+            
+            .progress-indicator {
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Extra small phones */
+        @media (max-width: 380px) {
+            h1 { font-size: 1.3rem; }
+            .intro-headline { font-size: 1.5rem; }
+            .left-panel { padding: 16px 16px 12px; }
+            .right-panel { 
+                height: 38%;
+                max-height: 280px;
+            }
         }
     </style>
 </head>
@@ -252,7 +350,7 @@
 
                 <div id="text-2" class="slide-text">
                     <p class="metric-line">
-                        Just <span class="metric-value blue">30 Min</span> to major Tech Parks
+                        Just <span class="metric-value">30 Min</span> to major Tech Parks
                     </p>
                     <h1>Seamless Connectivity <br>from Yelahanka.</h1>
                     <p class="description">
@@ -262,7 +360,7 @@
 
                 <div id="text-3" class="slide-text">
                     <p class="metric-line">
-                        Adjacent to <span class="metric-value green">1,320 Ac</span> GKVK Forest
+                        Adjacent to <span class="metric-value">1,320 Ac</span> GKVK Forest
                     </p>
                     <h1>You can't build fresh air. <br>So we built next to it.</h1>
                     <p class="description">
