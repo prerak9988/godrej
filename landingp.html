@@ -2,19 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yelahanka Campaign - Market Watch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yelahanka Campaign - Mobile Optimized</title>
     <style>
-        /* --- DESIGN TOKENS --- */
+        /* --- VARIABLES --- */
         :root {
             --bg-color: #F5F7FA;
             --text-dark: #111827;
             --text-muted: #6B7280;
             --accent-blue: #2563EB;
             --accent-yellow: #F4D03F;
-            --accent-green: #10B981; /* For Greenery Slide */
-            --border-light: rgba(0,0,0,0.06);
-            --radius-box: 32px;
+            --radius-desktop: 32px;
+            --radius-mobile: 24px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22,244 +21,174 @@
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
-            height: 100vh;
+            height: 100vh; /* Fallback */
+            height: 100dvh; /* Dynamic viewport height for mobile browsers */
             width: 100vw;
             overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        /* --- MAIN GRID LAYOUT --- */
+        /* --- 1. INTRO LAYER (Full Screen) --- */
+        .intro-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 9999;
+            background: #000;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .intro-video {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        .intro-headline {
+            position: relative; z-index: 10;
+            color: #fff; font-size: 3.5rem; font-weight: 800;
+            text-align: center; max-width: 900px; padding: 20px;
+            opacity: 0; transform: translateY(30px);
+            transition: all 1s ease-out;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+        
+        .intro-headline.visible { opacity: 1; transform: translateY(0); }
+        .intro-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        /* --- 2. MAIN APP LAYOUT --- */
         .app-container {
-            width: 95%;
-            height: 90%;
-            max-width: 1600px;
+            width: 95%; height: 90%; max-width: 1600px;
+            margin: 2.5% auto; /* Centers it vertically/horizontally */
             display: grid;
-            grid-template-columns: 1fr 1.2fr;
+            grid-template-columns: 1fr 1.2fr; /* Desktop: Text Left, Video Right */
             gap: 40px;
             background: #fff;
             padding: 40px;
-            border-radius: 40px;
+            border-radius: var(--radius-desktop);
             box-shadow: 0 20px 60px rgba(0,0,0,0.05);
+            opacity: 0; transform: scale(0.98); transition: all 1s ease;
         }
 
-        /* --- LEFT PANEL --- */
+        .app-container.visible { opacity: 1; transform: scale(1); }
+
+        /* --- LEFT PANEL (TEXT) --- */
         .left-panel {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 20px 20px 20px 0;
+            display: flex; flex-direction: column; justify-content: space-between;
+            position: relative; overflow: hidden;
         }
 
-        /* HEADER */
-        .panel-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
+        .panel-header { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .status-dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #10B981;
-            border-radius: 50%;
-            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
-            transition: background 0.5s ease;
-        }
-
-        /* CONTENT AREA */
-        .content-wrapper {
-            position: relative;
-            height: 320px; /* Space for text transitions */
-            display: flex;
-            align-items: center;
-        }
-
+        .content-wrapper { position: relative; height: 300px; display: flex; align-items: center; }
+        
         .slide-text {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%) translateX(30px);
-            opacity: 0;
-            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-            width: 100%;
-            pointer-events: none;
+            position: absolute; top: 50%; width: 100%;
+            transform: translateY(-50%) translateX(20px);
+            opacity: 0; transition: all 0.6s ease; pointer-events: none;
         }
+        .slide-text.active { opacity: 1; transform: translateY(-50%) translateX(0); pointer-events: auto; }
 
-        .slide-text.active {
-            opacity: 1;
-            transform: translateY(-50%) translateX(0);
-            pointer-events: auto;
-        }
-
-        h1 {
-            font-size: 2.8rem;
-            line-height: 1.1;
-            color: var(--text-dark);
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 24px;
-        }
-
-        .highlight-mark {
-            background: linear-gradient(120deg, transparent 0%, transparent 100%);
-            background-repeat: no-repeat;
-            background-size: 100% 40%;
-            background-position: 0 88%;
-            transition: background-size 1s ease;
-        }
-
-        .active .highlight-mark {
-            background: linear-gradient(120deg, rgba(244, 208, 63, 0.5) 0%, rgba(244, 208, 63, 0.5) 100%);
-            background-repeat: no-repeat;
-            background-size: 100% 40%;
-            background-position: 0 88%;
-        }
-
-        /* Greenery Highlight override */
-        .green-highlight .highlight-mark {
-             background: linear-gradient(120deg, rgba(16, 185, 129, 0.3) 0%, rgba(16, 185, 129, 0.3) 100%);
-        }
-
-        p.description {
-            font-size: 1.15rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-            max-width: 480px;
-            border-left: 3px solid var(--border-light);
-            padding-left: 20px;
-        }
+        h1 { font-size: 2.8rem; line-height: 1.1; color: var(--text-dark); margin-bottom: 20px; font-weight: 800; }
+        p.description { font-size: 1.15rem; color: var(--text-muted); line-height: 1.5; border-left: 3px solid #E5E7EB; padding-left: 15px; }
+        .highlight-mark { background: linear-gradient(120deg, rgba(244, 208, 63, 0.4) 0%, rgba(244, 208, 63, 0.4) 100%); background-size: 100% 40%; background-position: 0 85%; background-repeat: no-repeat; }
 
         /* Badges */
-        .stat-badge {
-            display: inline-flex;
-            flex-direction: column;
-            background: var(--text-dark);
-            color: #fff;
-            padding: 10px 18px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        .stat-badge .value { font-size: 1.5rem; font-weight: 700; color: var(--accent-yellow); }
+        .stat-badge { display: inline-flex; flex-direction: column; background: var(--text-dark); color: #fff; padding: 8px 16px; border-radius: 10px; margin-bottom: 16px; width: fit-content; }
+        .stat-badge .value { font-size: 1.4rem; font-weight: 700; color: var(--accent-yellow); }
         .stat-badge .label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
 
-        /* FOOTER & NAV */
-        .panel-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-top: 1px solid var(--border-light);
-            padding-top: 30px;
-        }
+        /* --- CONTROLS --- */
+        .panel-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #F3F4F6; padding-top: 24px; }
+        .progress-indicator { font-family: monospace; font-weight: 600; color: var(--text-dark); display: flex; align-items: center; gap: 10px; }
+        .progress-bar { width: 60px; height: 2px; background: #E5E7EB; position: relative; }
+        .progress-fill { position: absolute; left: 0; height: 100%; background: var(--text-dark); width: 33%; transition: width 0.3s; }
+        
+        .nav-buttons { display: flex; gap: 12px; }
+        .nav-btn { width: 52px; height: 52px; border-radius: 50%; border: 1px solid #E5E7EB; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-dark); }
+        .nav-btn:active { background: #f0f0f0; }
 
-        .progress-indicator {
-            font-family: monospace;
-            font-size: 1rem;
-            color: var(--text-dark);
-            font-weight: 600;
-        }
-        .progress-bar {
-            display: inline-block;
-            width: 80px;
-            height: 2px;
-            background: #E5E7EB;
-            margin: 0 15px;
-            vertical-align: middle;
-            position: relative;
-        }
-        .progress-fill {
-            position: absolute;
-            left: 0; top: 0; height: 100%;
-            background: var(--text-dark);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .nav-buttons { display: flex; gap: 16px; }
-
-        .nav-btn {
-            width: 56px; height: 56px;
-            border-radius: 50%;
-            border: 1px solid #E5E7EB;
-            background: #fff;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease;
-            color: var(--text-dark);
-        }
-
-        .nav-btn:hover {
-            background: var(--text-dark);
-            color: #fff;
-            border-color: var(--text-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        .nav-btn.disabled { opacity: 0.3; pointer-events: none; }
-
-        /* --- RIGHT PANEL --- */
-        .right-panel {
-            background: #000;
-            border-radius: var(--radius-box);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .video-player {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            opacity: 0;
-            transition: opacity 0.8s ease;
-            position: absolute;
-            top: 0; left: 0;
-        }
+        /* --- RIGHT PANEL (VIDEO) --- */
+        .right-panel { background: #000; border-radius: var(--radius-desktop); overflow: hidden; position: relative; }
+        .video-player { width: 100%; height: 100%; object-fit: cover; opacity: 0; position: absolute; top: 0; left: 0; transition: opacity 0.5s; }
         .video-player.active { opacity: 1; }
 
-        /* --- MOBILE --- */
+
+        /* --- MOBILE STYLES (PORTRAIT MODE) --- */
         @media (max-width: 1024px) {
-            .app-container { flex-direction: column-reverse; width: 100%; height: 100%; border-radius: 0; padding: 0; }
-            .left-panel { padding: 30px; flex: 1; }
-            .right-panel { flex: 0 0 45vh; border-radius: 0 0 30px 30px; }
-            h1 { font-size: 1.8rem; }
-            .content-wrapper { height: auto; margin: 20px 0; }
-            .slide-text { position: relative; opacity: 1; transform: none; display: none; }
-            .slide-text.active { display: block; }
+            
+            body { padding: 0; background: #fff; }
+
+            /* Remove the "Card" look, make it full screen */
+            .app-container {
+                width: 100%; height: 100%; max-width: none;
+                margin: 0; padding: 0; border-radius: 0;
+                display: flex;
+                flex-direction: column-reverse; /* Puts Video FIRST (Top), Text SECOND (Bottom) in HTML order context, wait... */
+                /* Actually simpler: just use Flex Column and Swap Order */
+                flex-direction: column; 
+                gap: 0;
+            }
+
+            /* 1. VIDEO ON TOP */
+            .right-panel {
+                order: 1; /* First */
+                flex: 0 0 50%; /* Takes exactly top 50% */
+                width: 100%;
+                border-radius: 0 0 30px 30px; /* Round bottom corners only */
+                z-index: 2;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+
+            /* 2. TEXT ON BOTTOM */
+            .left-panel {
+                order: 2; /* Second */
+                flex: 1; /* Takes remaining space */
+                padding: 30px 24px;
+                background: #fff;
+            }
+
+            /* Adjust typography for mobile */
+            .intro-headline { font-size: 2rem; padding: 20px; }
+            h1 { font-size: 2rem; margin-bottom: 15px; }
+            .content-wrapper { height: auto; flex: 1; align-items: flex-start; padding-top: 10px; }
+            .slide-text { position: relative; transform: none; top: auto; opacity: 1; display: none; }
+            .slide-text.active { display: block; animation: fadeUp 0.5s ease; }
+
+            @keyframes fadeUp {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            /* Controls at very bottom */
+            .panel-footer { padding-top: 20px; border-top: none; }
+            .nav-btn { width: 48px; height: 48px; } /* Slightly smaller for touch */
         }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
+    <div class="intro-overlay" id="intro-layer">
+        <video class="intro-video" autoplay muted playsinline>
+            <source src="video1.mp4" type="video/mp4">
+        </video>
+        <h1 class="intro-headline" id="intro-text">
+            See the hidden indicators driving the Yelahanka boom.
+        </h1>
+    </div>
+
+    <div class="app-container" id="main-app">
         
         <div class="left-panel">
-            
             <div class="panel-header">
-                <div class="status-dot" id="status-indicator"></div>
+                <div class="status-dot"></div>
                 <span>Market Watch: Q1 2026</span>
-                <span style="color: #E5E7EB;">|</span>
-                <span>Yelahanka Sector</span>
             </div>
 
             <div class="content-wrapper">
                 
                 <div id="text-1" class="slide-text active">
-                    <h1>See the <span class="highlight-mark">hidden indicators</span> driving the Yelahanka boom.</h1>
-                    <p class="description">
-                        Before you buy a home, are you considering the right pointers? Our free guide reveals the data most buyers miss.
-                    </p>
-                </div>
-
-                <div id="text-2" class="slide-text">
                     <div class="stat-badge">
                         <span class="value">25.3%</span>
-                        <span class="label">YoY Growth</span>
+                        <span class="label">Growth</span>
                     </div>
                     <h1>Missed Whitefield? <br>Don't miss <span class="highlight-mark">Yelahanka.</span></h1>
                     <p class="description">
@@ -267,21 +196,25 @@
                     </p>
                 </div>
 
-                <div id="text-3" class="slide-text">
+                <div id="text-2" class="slide-text">
                     <div class="stat-badge" style="background: #2563EB;">
-                        <span class="value">30 Mins</span>
+                        <span class="value">30 Min</span>
                         <span class="label">To Tech Parks</span>
                     </div>
-                    <h1>Seamless Connectivity <br>from <span class="highlight-mark">Yelahanka.</span></h1>
+                    <h1>Seamless Connectivity <br>from <span class="highlight-mark" style="background-image: linear-gradient(120deg, rgba(37, 99, 235, 0.3) 0%, rgba(37, 99, 235, 0.3) 100%);">Yelahanka.</span></h1>
                     <p class="description">
-                        Reach the airport, CBD, and major tech parks within just 30 minutes. The new arterial roads have changed the game.
+                        Reach the airport, CBD, and major tech parks within just 30 minutes. 
                     </p>
                 </div>
 
-                <div id="text-4" class="slide-text green-highlight">
-                    <h1>You can't build fresh air. <br>So we built <span class="highlight-mark" style="background-size: 100% 40%;">next to it.</span></h1>
+                <div id="text-3" class="slide-text">
+                    <div class="stat-badge" style="background: #059669;">
+                        <span class="value">1,320 Ac</span>
+                        <span class="label">GKVK Forest</span>
+                    </div>
+                    <h1>You can't build fresh air. <br>So we built <span class="highlight-mark" style="background-image: linear-gradient(120deg, rgba(5, 150, 105, 0.3) 0%, rgba(5, 150, 105, 0.3) 100%);">next to it.</span></h1>
                     <p class="description">
-                        Yelahanka borders the <strong>1320-acre GKVK forest</strong> — one of the city’s largest green lungs. A rare luxury in 2026.
+                        Yelahanka borders one of the city’s largest green lungs. A rare luxury in 2026.
                     </p>
                 </div>
 
@@ -289,99 +222,68 @@
 
             <div class="panel-footer">
                 <div class="progress-indicator">
-                    <span id="current-step">01</span>
-                    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: 25%;"></div></div>
-                    <span style="opacity: 0.4;">04</span>
+                    <span id="curr-step">01</span>
+                    <div class="progress-bar"><div class="progress-fill" id="prog-bar"></div></div>
+                    <span style="opacity: 0.5; font-size: 0.9em;">03</span>
                 </div>
-
                 <div class="nav-buttons">
-                    <button class="nav-btn disabled" id="btn-prev" onclick="changeSlide(-1)">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                    <button class="nav-btn disabled" id="prev-btn" onclick="moveSlide(-1)">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
                     </button>
-                    <button class="nav-btn" id="btn-next" onclick="changeSlide(1)">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                    <button class="nav-btn" id="next-btn" onclick="moveSlide(1)">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
                     </button>
                 </div>
             </div>
-
         </div>
 
         <div class="right-panel">
-            <video class="video-player active" id="vid-1" autoplay muted loop playsinline>
-                <source src="video1.mp4" type="video/mp4">
-            </video>
-
-            <video class="video-player" id="vid-2" muted loop playsinline>
-                <source src="video2.mp4" type="video/mp4">
-            </video>
-
-            <video class="video-player" id="vid-3" muted loop playsinline>
-                <source src="video3.mp4" type="video/mp4">
-            </video>
-
-            <video class="video-player" id="vid-4" muted loop playsinline>
-                <source src="video4.mp4" type="video/mp4">
-            </video>
+            <video class="video-player active" id="vid-1" muted loop playsinline><source src="video2.mp4" type="video/mp4"></video>
+            <video class="video-player" id="vid-2" muted loop playsinline><source src="video3.mp4" type="video/mp4"></video>
+            <video class="video-player" id="vid-3" muted loop playsinline><source src="video4.mp4" type="video/mp4"></video>
         </div>
 
     </div>
 
     <script>
-        let currentSlide = 1;
-        const totalSlides = 4;
-
-        function changeSlide(direction) {
-            const nextSlide = currentSlide + direction;
-
-            // Boundary Check
-            if (nextSlide < 1 || nextSlide > totalSlides) return;
-
-            // 1. Deactivate current
-            document.getElementById(`text-${currentSlide}`).classList.remove('active');
-            document.getElementById(`vid-${currentSlide}`).classList.remove('active');
-
-            // 2. Activate next (with slight delay for text)
+        // INTRO LOGIC
+        window.addEventListener('load', () => {
+            setTimeout(() => document.getElementById('intro-text').classList.add('visible'), 500);
             setTimeout(() => {
-                const vid = document.getElementById(`vid-${nextSlide}`);
-                document.getElementById(`text-${nextSlide}`).classList.add('active');
-                vid.classList.add('active');
-                vid.play(); // Force play on switch
-            }, 100);
+                document.getElementById('intro-layer').classList.add('hidden');
+                document.getElementById('main-app').classList.add('visible');
+                document.getElementById('vid-1').play();
+            }, 3500); // 3.5 seconds total intro
+        });
 
-            // 3. Update State
-            currentSlide = nextSlide;
-            updateUI();
-        }
+        // SLIDER LOGIC
+        let cur = 1;
+        const total = 3;
 
-        function updateUI() {
-            // Update Progress Bar
-            const percentage = (currentSlide / totalSlides) * 100;
-            document.getElementById('progress-fill').style.width = `${percentage}%`;
+        function moveSlide(dir) {
+            const next = cur + dir;
+            if (next < 1 || next > total) return;
+
+            // Hide Current
+            document.getElementById(`text-${cur}`).classList.remove('active');
+            document.getElementById(`vid-${cur}`).classList.remove('active');
+
+            // Show Next
+            setTimeout(() => {
+                document.getElementById(`text-${next}`).classList.add('active');
+                const v = document.getElementById(`vid-${next}`);
+                v.classList.add('active');
+                v.play();
+            }, 50); // Fast transition
+
+            cur = next;
             
-            // Update Number
-            document.getElementById('current-step').innerText = `0${currentSlide}`;
-
-            // Update Buttons
-            const prevBtn = document.getElementById('btn-prev');
-            const nextBtn = document.getElementById('btn-next');
-
-            // Prev Button Logic
-            if (currentSlide === 1) prevBtn.classList.add('disabled');
-            else prevBtn.classList.remove('disabled');
-
-            // Next Button Logic
-            if (currentSlide === totalSlides) nextBtn.classList.add('disabled');
-            else nextBtn.classList.remove('disabled');
-
-            // Special: Change Status Dot Color for Greenery Slide
-            const statusDot = document.getElementById('status-indicator');
-            if (currentSlide === 4) {
-                statusDot.style.background = '#059669'; // Forest Green
-                statusDot.style.boxShadow = '0 0 0 4px rgba(5, 150, 105, 0.2)';
-            } else {
-                statusDot.style.background = '#10B981'; // Standard Green
-                statusDot.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.1)';
-            }
+            // Update UI
+            document.getElementById('prog-bar').style.width = `${(cur/total)*100}%`;
+            document.getElementById('curr-step').innerText = `0${cur}`;
+            
+            document.getElementById('prev-btn').classList.toggle('disabled', cur === 1);
+            document.getElementById('next-btn').classList.toggle('disabled', cur === total);
         }
     </script>
 </body>
