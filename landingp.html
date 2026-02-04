@@ -66,6 +66,25 @@
             transition: all 1s ease-out;
             text-shadow: 0 4px 20px rgba(0,0,0,0.6);
         }
+
+        .free-guide-highlight {
+            display: inline-block;
+            background: linear-gradient(135deg, #F4D35E 0%, #F9E88A 100%);
+            color: #1C1C1C;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(244, 211, 94, 0.5);
+            animation: glow-pulse 2s ease-in-out infinite;
+            text-shadow: none;
+            margin-top: 12px;
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(244, 211, 94, 0.5); transform: scale(1); }
+            50% { box-shadow: 0 6px 30px rgba(244, 211, 94, 0.8); transform: scale(1.02); }
+        }
         
         .intro-headline.visible { opacity: 1; transform: translateY(0); }
         .intro-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
@@ -327,7 +346,8 @@
             <source src="video1.mp4" type="video/mp4">
         </video>
         <h1 class="intro-headline" id="intro-text">
-            See The Hidden Indicators Driving The Yelahanka Boom in our Free Home Buying Guide.
+            See The Hidden Indicators Driving The Yelahanka Boom<br>
+            <span class="free-guide-highlight">FREE Home Buying Guide</span>
         </h1>
     </div>
 
@@ -339,19 +359,13 @@
             <div class="content-wrapper">
                 
                 <div id="text-1" class="slide-text active">
-                    <p class="metric-line">
-                        With <span class="metric-value">25.3%*</span> growth in the region
-                    </p>
-                    <h1>Missed Whitefield? <br>Don't miss Yelahanka.</h1>
+                    <h1>Missed Whitefield? <br>Yelahanka just hit 25.3%* growth in real estate in the last year.</h1>
                     <p class="description">
-                        The same signals that triggered the boom are flashing here. Don't miss out twice.
+                        The same signal that triggered the boom. Don't miss out twice.
                     </p>
                 </div>
 
                 <div id="text-2" class="slide-text">
-                    <p class="metric-line">
-                        Just <span class="metric-value">30 Min</span> to major Tech Parks
-                    </p>
                     <h1>Seamless Connectivity <br>from Yelahanka.</h1>
                     <p class="description">
                         Reach the Airport, CBD, and major Tech Parks within just 30 minutes. 
@@ -359,12 +373,9 @@
                 </div>
 
                 <div id="text-3" class="slide-text">
-                    <p class="metric-line">
-                        Adjacent to <span class="metric-value">1,320 Acre</span> GKVK Forest
-                    </p>
-                    <h1>You can't build fresh air. <br>So we built next to it.</h1>
+                    <h1>You can't build fresh air. <br>So we built it next to it.</h1>
                     <p class="description">
-                        Yelahanka borders one of the city's largest green lungs. A rare Luxury.
+                        Yelahanka borders the 1320-acre GKVK forest, one of the city's largest green lungs.
                     </p>
                 </div>
 
